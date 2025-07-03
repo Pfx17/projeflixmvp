@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeflix</title>
+<style>
+body { margin:0; font-family:Arial,sans-serif; background:#000; color:#fff; display:flex; height:100vh; }
+.sidebar { width:200px; background:#000; border-right:2px solid #198754; padding:20px; box-sizing:border-box; }
+.sidebar img { display:block; margin:0 auto 20px; width:80%; }
+.sidebar ul { list-style:none; padding:0; }
+.sidebar li { padding:8px; cursor:pointer; border-left:3px solid transparent; }
+.sidebar li:hover { background:#101010; border-left:3px solid #198754; }
+.main { flex:1; padding:30px; display:flex; flex-direction:column; align-items:center; }
+.documento { width:80%; height:400px; background:#101010; border:1px solid #198754;
+ display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
+.documento iframe, .documento img { max-width:100%; max-height:100%; }
+.botoes button { background:#198754; color:#fff; border:none; padding:10px 15px; margin:0 5px; cursor:pointer; font-weight:bold; }
+.botoes button:hover { background:#14653f; }
+.timeline { display:flex; margin-top:20px; }
+.timeline span { width:20px; height:20px; background:#198754; border-radius:50%; margin:0 10px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="sidebar">
+<img src="logo-projeflix.png" alt="Projeflix Logo">
+<ul>
+<li onclick="selecionarProjeto(1)">Projeto 1</li>
+<li onclick="selecionarProjeto(2)">Projeto 2</li>
+</ul>
+</div>
+<div class="main">
+<div class="documento" id="quadroDocumento"><span>Selecione um projeto e milestone</span></div>
+<div class="botoes">
+<button onclick="abrirMaior()">🔍 Abrir maior</button>
+<button onclick="fazerDownload()">📥 Download</button>
+</div>
+<div class="timeline" id="timeline"></div>
+</div>
+<script>
+const projetos={1:{nome:"Projeto 1",fases:[{nome:"Kickoff",tipo:"pdf",doc:"docs/kickoff.pdf"},
+{nome:"Planejamento",tipo:"carrossel",imagens:["docs/planej-1.png","docs/planej-2.png"]}]},
+2:{nome:"Projeto 2",fases:[{nome:"Kickoff",tipo:"carrossel",imagens:["docs/kickoff-1.png","docs/kickoff-2.png"]},
+{nome:"Execução",tipo:"pdf",doc:"docs/execucao.pdf"}]}};
+let projetoAtual=null,faseAtual=0,slide=0;
+function selecionarProjeto(id){projetoAtual=projetos[id];faseAtual=0;slide=0;montarTimeline();mostrarFase(0);}
+function montarTimeline(){const t=document.getElementById("timeline");t.innerHTML="";
+projetoAtual.fases.forEach((_,i)=>{let e=document.createElement("span");e.onclick=()=>mostrarFase(i);t.appendChild(e);});}
+function mostrarFase(i){faseAtual=i;slide=0;const f=projetoAtual.fases[i],q=document.getElementById("quadroDocumento");
+if(f.tipo==="pdf"){q.innerHTML=`<iframe src="${f.doc}"></iframe>`;}else if(f.tipo==="carrossel"){q.innerHTML=`<img src="${f.imagens[slide]}">`;}}
+function abrirMaior(){const f=projetoAtual.fases[faseAtual];window.open(f.tipo==="pdf"?f.doc:f.imagens[slide],"_blank");}
+function fazerDownload(){const f=projetoAtual.fases[faseAtual];let a=document.createElement('a');
+a.href=f.tipo==="pdf"?f.doc:f.imagens[slide];a.download="";a.click();}
+</script></body></html>
