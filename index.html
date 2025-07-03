@@ -39,18 +39,18 @@ body { margin:0; font-family:Arial,sans-serif; background:#000; color:#fff; disp
 </div>
 <script>
 const projetos={
-  1:{ 
-    nome:"Vívian", // ✅ Altere o nome do projeto aqui
+  1:{
+    nome:"Vívian",
     fases:[
-      {nome:"Kickoff", tipo:"pdf", doc:"docs/kickoff.pdf"},
-      {nome:"Planejamento", tipo:"carrossel", imagens:["docs/planej-1.png","docs/planej-2.png"]}
+      {nome:"Plano de Projeto", tipo:"pdf", doc:"docs/TESTE.pdf"}, // ✅ Edite o nome aqui
+      {nome:"Kickoff", tipo:"carrossel", imagens:["docs/TESTE.png"]} // ✅ Edite o nome aqui
     ]
   },
-  2:{ 
-    nome:"Theodoro", // ✅ Altere o nome do projeto aqui
+  2:{
+    nome:"Theodoro",
     fases:[
-      {nome:"Kickoff", tipo:"carrossel", imagens:["docs/kickoff-1.png","docs/kickoff-2.png"]},
-      {nome:"Execução", tipo:"pdf", doc:"docs/execucao.pdf"}
+      {nome:"Plano de Projeto", tipo:"pdf", doc:"docs/TESTE.pdf"},
+      {nome:"Kickoff", tipo:"carrossel", imagens:["docs/TESTE.png"]}
     ]
   }
 };
@@ -59,7 +59,7 @@ function selecionarProjeto(id){projetoAtual=projetos[id];faseAtual=0;slide=0;mon
 function montarTimeline(){const t=document.getElementById("timeline");t.innerHTML="";
 projetoAtual.fases.forEach((_,i)=>{let e=document.createElement("span");e.onclick=()=>mostrarFase(i);t.appendChild(e);});}
 function mostrarFase(i){faseAtual=i;slide=0;const f=projetoAtual.fases[i],q=document.getElementById("quadroDocumento");
-if(f.tipo==="pdf"){q.innerHTML=`<iframe src="${f.doc}"></iframe>`;}else if(f.tipo==="carrossel"){q.innerHTML=`<img src="${f.imagens[slide]}">`;}}
+if(f.tipo==="pdf"){q.innerHTML=`<iframe src="${f.doc}"></iframe>`;}else if(f.tipo==="carrossel"){q.innerHTML=`<img src="${f.imagens[slide]}">`;} }
 function abrirMaior(){const f=projetoAtual.fases[faseAtual];window.open(f.tipo==="pdf"?f.doc:f.imagens[slide],"_blank");}
 function fazerDownload(){const f=projetoAtual.fases[faseAtual];let a=document.createElement('a');
 a.href=f.tipo==="pdf"?f.doc:f.imagens[slide];a.download="";a.click();}
