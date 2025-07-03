@@ -17,20 +17,20 @@ body { margin:0; font-family:Arial,sans-serif; background:#000; color:#fff; disp
 .documento iframe, .documento img { max-width:100%; max-height:100%; }
 .botoes button { background:#198754; color:#fff; border:none; padding:10px 15px; margin:0 5px; cursor:pointer; font-weight:bold; }
 .botoes button:hover { background:#14653f; }
-.timeline { display:flex; margin-top:20px; }
-.timeline span { width:20px; height:20px; background:#198754; border-radius:50%; margin:0 10px; cursor:pointer; }
+.timeline { display:flex; justify-content:center; align-items:center; margin-top:20px; gap:20px; }
+.timeline div { padding:8px 15px; background:#198754; border-radius:20px; cursor:pointer; font-weight:bold; }
+.timeline div:hover { background:#14653f; }
 </style>
 </head>
 <body>
 <div class="sidebar">
 <img src="logo-projeflix.png" alt="Projeflix Logo">
 <ul>
-<li onclick="selecionarProjeto(1)">Vívian</li>
-<li onclick="selecionarProjeto(2)">Theodoro</li>
+<li style="border-left:3px solid #198754;">Vívian</li>
 </ul>
 </div>
 <div class="main">
-<div class="documento" id="quadroDocumento"><span>Selecione um projeto e milestone</span></div>
+<div class="documento" id="quadroDocumento"><span>Selecione um milestone</span></div>
 <div class="botoes">
 <button onclick="abrirMaior()">🔍 Abrir maior</button>
 <button onclick="fazerDownload()">📥 Download</button>
@@ -38,29 +38,37 @@ body { margin:0; font-family:Arial,sans-serif; background:#000; color:#fff; disp
 <div class="timeline" id="timeline"></div>
 </div>
 <script>
-const projetos={
-  1:{
-    nome:"Vívian",
-    fases:[
-      {nome:"Plano de Projeto", tipo:"pdf", doc:"docs/TESTE.pdf"}, // ✅ Edite o nome aqui
-      {nome:"Kickoff", tipo:"carrossel", imagens:["docs/TESTE.png"]} // ✅ Edite o nome aqui
-    ]
-  },
-  2:{
-    nome:"Theodoro",
-    fases:[
-      {nome:"Plano de Projeto", tipo:"pdf", doc:"docs/TESTE.pdf"},
-      {nome:"Kickoff", tipo:"carrossel", imagens:["docs/TESTE.png"]}
-    ]
-  }
+const projeto = {
+  nome:"Vívian",
+  fases:[
+    {nome:"Plano de Projeto", tipo:"pdf", doc:"docs/TESTE.pdf"},
+    {nome:"Kickoff", tipo:"carrossel", imagens:["docs/TESTE.png"]}
+  ]
 };
-let projetoAtual=null,faseAtual=0,slide=0;
-function selecionarProjeto(id){projetoAtual=projetos[id];faseAtual=0;slide=0;montarTimeline();mostrarFase(0);}
-function montarTimeline(){const t=document.getElementById("timeline");t.innerHTML="";
-projetoAtual.fases.forEach((_,i)=>{let e=document.createElement("span");e.onclick=()=>mostrarFase(i);t.appendChild(e);});}
-function mostrarFase(i){faseAtual=i;slide=0;const f=projetoAtual.fases[i],q=document.getElementById("quadroDocumento");
-if(f.tipo==="pdf"){q.innerHTML=`<iframe src="${f.doc}"></iframe>`;}else if(f.tipo==="carrossel"){q.innerHTML=`<img src="${f.imagens[slide]}">`;} }
-function abrirMaior(){const f=projetoAtual.fases[faseAtual];window.open(f.tipo==="pdf"?f.doc:f.imagens[slide],"_blank");}
-function fazerDownload(){const f=projetoAtual.fases[faseAtual];let a=document.createElement('a');
-a.href=f.tipo==="pdf"?f.doc:f.imagens[slide];a.download="";a.click();}
+let faseAtual=0,slide=0;
+function montarTimeline(){
+  const t=document.getElementById("timeline"); t.innerHTML="";
+  projeto.fases.forEach((f,i)=>{
+    let el=document.createElement("div");
+    el.innerText=f.nome;
+    el.onclick=()=>mostrarFase(i);
+    t.appendChild(el);
+  });
+}
+function mostrarFase(i){
+  faseAtual=i; slide=0;
+  const f=projeto.fases[i], q=document.getElementById("quadroDocumento");
+  if(f.tipo==="pdf"){q.innerHTML=`<iframe src="${f.doc}"></iframe>`;}
+  else if(f.tipo==="carrossel"){q.innerHTML=`<img src="${f.imagens[slide]}">`;}
+}
+function abrirMaior(){
+  const f=projeto.fases[faseAtual];
+  window.open(f.tipo==="pdf"?f.doc:f.imagens[slide],"_blank");
+}
+function fazerDownload(){
+  const f=projeto.fases[faseAtual];
+  let a=document.createElement('a');
+  a.href=f.tipo==="pdf"?f.doc:f.imagens[slide]; a.download=""; a.click();
+}
+montarTimeline();
 </script></body></html>
