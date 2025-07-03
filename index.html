@@ -13,17 +13,21 @@ body { margin:0; font-family:Arial,sans-serif; background:#000; color:#fff; disp
 .sidebar li { padding:10px; cursor:pointer; border-left:4px solid transparent; }
 .sidebar li:hover, .sidebar li.active { background:#14653f; border-left:4px solid #fff; font-weight:bold; }
 .main { flex:1; padding:30px; display:flex; flex-direction:column; align-items:center; }
-.timeline { display:flex; justify-content:center; align-items:center; margin-bottom:20px; gap:20px; }
-.timeline div { padding:10px 20px; background:#198754; border-radius:20px; cursor:pointer; font-weight:bold; }
-.timeline div:hover, .timeline div.active { background:#14653f; }
-.documento-container { display:flex; align-items:center; justify-content:center; width:80%; }
-.carrossel-btn { font-size:30px; padding:10px; cursor:pointer; user-select:none; }
-.documento { flex:1; height:400px; background:#101010; border:1px solid #198754;
- display:flex; align-items:center; justify-content:center; margin:0 10px; }
-.documento iframe, .documento img { max-width:100%; max-height:100%; }
+.timeline-container { display:flex; align-items:center; margin-bottom:20px; }
+.play-btn { font-size:24px; margin-right:10px; cursor:pointer; }
+.timeline { display:flex; align-items:center; gap:15px; }
+.timeline span { cursor:pointer; font-size:14px; }
+.timeline span.active { color:#198754; font-weight:bold; }
+.timeline span::after { content:"—"; color:#fff; margin:0 5px; }
+.timeline span:last-child::after { content:""; }
+.documento-container { position:relative; display:flex; align-items:center; justify-content:center; width:80%; height:400px; background:#101010; border:1px solid #198754; }
+.carrossel-btn { position:absolute; top:50%; transform:translateY(-50%); font-size:30px; padding:10px; cursor:pointer; user-select:none; display:none; }
+.carrossel-btn.left { left:10px; }
+.carrossel-btn.right { right:10px; }
+.documento-container img, .documento-container iframe { max-width:100%; max-height:100%; }
 .botoes { margin-top:20px; }
-.botoes button { background:#198754; color:#fff; border:none; padding:12px 20px; margin:0 10px; cursor:pointer; font-weight:bold; text-transform:uppercase; }
-.botoes button:hover { background:#14653f; }
+.botoes button { background:none; border:2px solid #198754; color:#198754; padding:10px 20px; margin:0 10px; cursor:pointer; font-weight:bold; text-transform:uppercase; }
+.botoes button:hover { background:#198754; color:#fff; }
 </style>
 </head>
 <body>
@@ -36,11 +40,14 @@ body { margin:0; font-family:Arial,sans-serif; background:#000; color:#fff; disp
 </ul>
 </div>
 <div class="main">
+<div class="timeline-container">
+<div class="play-btn" onclick="playTimeline()">▶</div>
 <div class="timeline" id="timeline"></div>
-<div class="documento-container">
-<div class="carrossel-btn" onclick="anteriorSlide()">&lt;</div>
-<div class="documento" id="quadroDocumento"><span>Selecione um milestone</span></div>
-<div class="carrossel-btn" onclick="proximoSlide()">&gt;</div>
+</div>
+<div class="documento-container" id="quadroDocumento">
+<div class="carrossel-btn left" id="prevSlide" onclick="anteriorSlide()">&lt;</div>
+<div class="carrossel-btn right" id="nextSlide" onclick="proximoSlide()">&gt;</div>
+<span>Selecione um milestone</span>
 </div>
 <div class="botoes">
 <button onclick="abrirMaior()">ABRIR</button>
@@ -49,32 +56,36 @@ body { margin:0; font-family:Arial,sans-serif; background:#000; color:#fff; disp
 </div>
 <script>
 const projetos={
-  1:{
-    nome:"Vívian",
-    fases:[
-      {nome:"Plano de Projeto", tipo:"pdf", doc:"docs/TESTE.pdf"},
-      {nome:"Kickoff", tipo:"carrossel", imagens:["docs/TESTE.png"]}
-    ]
-  },
-  2:{
-    nome:"Theodoro",
-    fases:[
-      {nome:"Plano de Projeto", tipo:"pdf", doc:"docs/TESTE.pdf"},
-      {nome:"Kickoff", tipo:"carrossel", imagens:["docs/TESTE.png"]}
-    ]
-  }
+  1:{nome:"Vívian",fases:[
+    {nome:"PLANO DE PROJETO", tipo:"pdf", doc:"docs/TESTE.pdf"},
+    {nome:"ESCOPO", tipo:"pdf", doc:"docs/TESTE.pdf"},
+    {nome:"EAP", tipo:"pdf", doc:"docs/TESTE.pdf"},
+    {nome:"KICKOFF", tipo:"carrossel", imagens:["docs/TESTE.png"]},
+    {nome:"IMPLEMENTAÇÃO", tipo:"carrossel", imagens:["docs/TESTE.png"]},
+    {nome:"VALIDAÇÃO DA ENTREGA", tipo:"pdf", doc:"docs/TESTE.pdf"},
+    {nome:"TEP", tipo:"pdf", doc:"docs/TESTE.pdf"}
+  ]},
+  2:{nome:"Theodoro",fases:[
+    {nome:"PLANO DE PROJETO", tipo:"pdf", doc:"docs/TESTE.pdf"},
+    {nome:"ESCOPO", tipo:"pdf", doc:"docs/TESTE.pdf"},
+    {nome:"EAP", tipo:"pdf", doc:"docs/TESTE.pdf"},
+    {nome:"KICKOFF", tipo:"carrossel", imagens:["docs/TESTE.png"]},
+    {nome:"IMPLEMENTAÇÃO", tipo:"carrossel", imagens:["docs/TESTE.png"]},
+    {nome:"VALIDAÇÃO DA ENTREGA", tipo:"pdf", doc:"docs/TESTE.pdf"},
+    {nome:"TEP", tipo:"pdf", doc:"docs/TESTE.pdf"}
+  ]}
 };
 let projetoAtual=projetos[1], faseAtual=0, slide=0;
-document.querySelectorAll(".sidebar li").forEach((el,i)=>{
-  el.onclick=()=>{selecionarProjeto(i+1);
-    document.querySelectorAll(".sidebar li").forEach(li=>li.classList.remove("active"));
-    el.classList.add("active");
-  };
-});
+function selecionarProjeto(id){
+  projetoAtual=projetos[id]; faseAtual=0; slide=0;
+  document.querySelectorAll(".sidebar li").forEach(li=>li.classList.remove("active"));
+  document.querySelector(".sidebar li:nth-child("+(id+2)+")").classList.add("active");
+  montarTimeline(); mostrarFase(0);
+}
 function montarTimeline(){
   const t=document.getElementById("timeline"); t.innerHTML="";
   projetoAtual.fases.forEach((f,i)=>{
-    let el=document.createElement("div");
+    let el=document.createElement("span");
     el.innerText=f.nome;
     el.onclick=()=>mostrarFase(i);
     if(i===faseAtual) el.classList.add("active");
@@ -84,8 +95,14 @@ function montarTimeline(){
 function mostrarFase(i){
   faseAtual=i; slide=0; montarTimeline();
   const f=projetoAtual.fases[i], q=document.getElementById("quadroDocumento");
+  document.getElementById("prevSlide").style.display="none";
+  document.getElementById("nextSlide").style.display="none";
   if(f.tipo==="pdf"){q.innerHTML=`<iframe src="${f.doc}"></iframe>`;}
-  else if(f.tipo==="carrossel"){q.innerHTML=`<img src="${f.imagens[slide]}">`;}
+  else if(f.tipo==="carrossel"){
+    q.innerHTML=`<img src="${f.imagens[slide]}">`;
+    document.getElementById("prevSlide").style.display="block";
+    document.getElementById("nextSlide").style.display="block";
+  }
 }
 function anteriorSlide(){
   const f=projetoAtual.fases[faseAtual];
@@ -98,6 +115,8 @@ function proximoSlide(){
 function mostrarFaseCarrossel(){
   const f=projetoAtual.fases[faseAtual], q=document.getElementById("quadroDocumento");
   q.innerHTML=`<img src="${f.imagens[slide]}">`;
+  document.getElementById("prevSlide").style.display="block";
+  document.getElementById("nextSlide").style.display="block";
 }
 function abrirMaior(){
   const f=projetoAtual.fases[faseAtual];
@@ -106,6 +125,13 @@ function abrirMaior(){
 function fazerDownload(){
   const f=projetoAtual.fases[faseAtual]; let a=document.createElement('a');
   a.href=f.tipo==="pdf"?f.doc:f.imagens[slide]; a.download=""; a.click();
+}
+function playTimeline(){
+  let i=0;
+  const interval=setInterval(()=>{
+    mostrarFase(i++);
+    if(i>=projetoAtual.fases.length) clearInterval(interval);
+  },1500);
 }
 montarTimeline();
 </script>
