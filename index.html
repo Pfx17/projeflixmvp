@@ -38,9 +38,9 @@ body { margin:0; font-family:Arial,sans-serif; background:#000; color:#fff; disp
 <div class="timeline" id="timeline"></div>
 </div>
 <script>
-const projetos={1:{nome:"Projeto 1",fases:[{nome:"Kickoff",tipo:"pdf",doc:"docs/kickoff.pdf"},
+const projetos={1:{nome:"Vívian",fases:[{nome:"Kickoff",tipo:"pdf",doc:"docs/kickoff.pdf"},
 {nome:"Planejamento",tipo:"carrossel",imagens:["docs/planej-1.png","docs/planej-2.png"]}]},
-2:{nome:"Projeto 2",fases:[{nome:"Kickoff",tipo:"carrossel",imagens:["docs/kickoff-1.png","docs/kickoff-2.png"]},
+2:{nome:"Theodoro",fases:[{nome:"Kickoff",tipo:"carrossel",imagens:["docs/kickoff-1.png","docs/kickoff-2.png"]},
 {nome:"Execução",tipo:"pdf",doc:"docs/execucao.pdf"}]}};
 let projetoAtual=null,faseAtual=0,slide=0;
 function selecionarProjeto(id){projetoAtual=projetos[id];faseAtual=0;slide=0;montarTimeline();mostrarFase(0);}
